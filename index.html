@@ -1,267 +1,968 @@
 <!DOCTYPE html>
-<html lang="es" class="light">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PH Conecta | Gestión de Propiedad Horizontal</title>
-    
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Configuración de Tailwind -->
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            900: '#1e3a8a',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PH Conecta — Gestión Inteligente de Propiedad Horizontal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #030C1A;
+    --bg2: #060F22;
+    --bg3: #0A1530;
+    --card: #0D1B35;
+    --card2: #111F3D;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --teal: #00E5C8;
+    --teal2: #00C4AB;
+    --teal-dim: rgba(0,229,200,0.1);
+    --teal-dim2: rgba(0,229,200,0.06);
+    --amber: #F59E0B;
+    --amber-dim: rgba(245,158,11,0.12);
+    --red-dim: rgba(239,68,68,0.12);
+    --green-dim: rgba(34,197,94,0.12);
+    --text: #F0F4FF;
+    --text2: #8A9BC0;
+    --text3: #4E5F80;
+    --font: 'Outfit', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+    --r: 12px;
+    --r2: 20px;
+  }
 
-    <!-- Script para Modo Oscuro/Claro -->
-    <script>
-        // Inicializar tema según preferencia del sistema o guardado
-        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark')
-        }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.6; overflow-x: hidden; }
+  a { text-decoration: none; color: inherit; }
+  img { display: block; max-width: 100%; }
 
-        function toggleTheme() {
-            if (document.documentElement.classList.contains('dark')) {
-                document.documentElement.classList.remove('dark');
-                localStorage.setItem('color-theme', 'light');
-            } else {
-                document.documentElement.classList.add('dark');
-                localStorage.setItem('color-theme', 'dark');
-            }
-        }
-    </script>
+  /* ── NOISE TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    opacity: 0.4;
+  }
+
+  /* ── GLOW ORBS ── */
+  .orb1 {
+    position: fixed; width: 600px; height: 600px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,229,200,0.07) 0%, transparent 70%);
+    top: -200px; left: -200px; pointer-events: none; z-index: 0;
+  }
+  .orb2 {
+    position: fixed; width: 500px; height: 500px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 70%);
+    bottom: 10%; right: -100px; pointer-events: none; z-index: 0;
+  }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 1140px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+  section { position: relative; z-index: 1; }
+
+  /* ── BANNER ── */
+  .banner {
+    background: linear-gradient(90deg, rgba(0,229,200,0.15), rgba(99,102,241,0.15));
+    border-bottom: 1px solid var(--border);
+    padding: 10px 24px; text-align: center;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .banner-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); animation: pulse 2s infinite; flex-shrink: 0; }
+  .banner p { font-size: 12px; color: var(--text2); letter-spacing: 0.05em; font-weight: 500; }
+  .banner span { color: var(--teal); }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(3,12,26,0.85); backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+  }
+  .nav-inner {
+    max-width: 1140px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon {
+    width: 34px; height: 34px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--teal), #00A896);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-icon svg { width: 18px; height: 18px; stroke: #030C1A; }
+  .logo-text { font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+  .logo-text span { color: var(--teal); }
+  .nav-links { display: flex; align-items: center; gap: 8px; }
+  .nav-link { color: var(--text2); font-size: 14px; font-weight: 500; padding: 6px 14px; border-radius: 8px; transition: all 0.2s; }
+  .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+  .nav-cta {
+    background: var(--teal); color: #030C1A; font-size: 14px; font-weight: 600;
+    padding: 8px 20px; border-radius: 8px; transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .nav-cta:hover { background: var(--teal2); transform: translateY(-1px); }
+  .nav-cta svg { width: 14px; height: 14px; }
+  .nav-mobile-toggle { display: none; background: none; border: 1px solid var(--border2); color: var(--text2); padding: 8px; border-radius: 8px; cursor: pointer; }
+
+  /* ── HERO ── */
+  .hero { padding: 80px 0 60px; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--teal-dim); border: 1px solid rgba(0,229,200,0.2);
+    color: var(--teal); font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+    padding: 6px 14px; border-radius: 100px; margin-bottom: 28px;
+    text-transform: uppercase;
+  }
+  .hero-badge-dot { width: 6px; height: 6px; background: var(--teal); border-radius: 50%; }
+  .hero h1 {
+    font-size: clamp(36px, 6vw, 72px); font-weight: 800; line-height: 1.07;
+    letter-spacing: -0.03em; margin-bottom: 24px; max-width: 820px;
+    color: var(--text);
+  }
+  .hero h1 em { font-style: normal; color: var(--teal); }
+  .hero-sub {
+    font-size: clamp(16px, 2vw, 19px); color: var(--text2); max-width: 560px;
+    line-height: 1.65; margin-bottom: 40px; font-weight: 400;
+  }
+  .hero-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 64px; }
+  .btn-primary {
+    background: var(--teal); color: #030C1A; font-size: 15px; font-weight: 700;
+    padding: 14px 28px; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.2s; cursor: pointer; border: none;
+  }
+  .btn-primary:hover { background: var(--teal2); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,229,200,0.25); }
+  .btn-primary svg { width: 16px; height: 16px; }
+  .btn-secondary {
+    background: transparent; color: var(--text2); font-size: 15px; font-weight: 500;
+    padding: 14px 28px; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid var(--border2); transition: all 0.2s;
+  }
+  .btn-secondary:hover { color: var(--text); border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.03); }
+  .btn-secondary svg { width: 16px; height: 16px; }
+
+  /* ── TRUST LOGOS ── */
+  .trust-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .trust-label { font-size: 12px; color: var(--text3); font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
+  .trust-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+  .trust-badge {
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--text3); font-size: 11px; font-weight: 600;
+    padding: 5px 12px; border-radius: 6px; letter-spacing: 0.04em;
+  }
+
+  /* ── STATS ── */
+  .stats-strip {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 1px; background: var(--border);
+    border: 1px solid var(--border); border-radius: var(--r2);
+    overflow: hidden; margin-top: 60px;
+  }
+  .stat-item {
+    background: var(--card); padding: 28px 24px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .stat-num { font-size: 32px; font-weight: 800; letter-spacing: -0.03em; color: var(--text); }
+  .stat-num span { color: var(--teal); }
+  .stat-label { font-size: 13px; color: var(--text2); font-weight: 400; }
+
+  /* ── DASHBOARD PREVIEW ── */
+  .dash-section { padding: 80px 0; }
+  .dash-label {
+    font-size: 12px; font-weight: 600; color: var(--teal); letter-spacing: 0.1em;
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .dash-section h2 {
+    font-size: clamp(28px, 4vw, 46px); font-weight: 800; letter-spacing: -0.025em;
+    margin-bottom: 16px; max-width: 640px;
+  }
+  .dash-section p { color: var(--text2); font-size: 17px; max-width: 520px; margin-bottom: 48px; line-height: 1.65; }
+
+  .dashboard-mock {
+    background: var(--bg2); border: 1px solid var(--border2);
+    border-radius: var(--r2); overflow: hidden;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,229,200,0.05);
+  }
+  .dash-topbar {
+    background: var(--bg3); border-bottom: 1px solid var(--border);
+    padding: 12px 20px; display: flex; align-items: center; gap: 12px;
+  }
+  .traffic-dots { display: flex; gap: 7px; }
+  .td { width: 11px; height: 11px; border-radius: 50%; }
+  .dash-url {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 6px; padding: 4px 14px;
+    font-size: 11px; font-family: var(--mono); color: var(--text3);
+    flex: 1; max-width: 340px; display: flex; align-items: center; gap: 6px;
+  }
+  .dash-url-dot { width: 7px; height: 7px; background: var(--teal); border-radius: 50%; flex-shrink: 0; }
+
+  .dash-body { display: flex; min-height: 500px; }
+  .dash-sidebar {
+    width: 200px; flex-shrink: 0; background: var(--bg3);
+    border-right: 1px solid var(--border); padding: 20px 12px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .dash-sidebar-logo { display: flex; align-items: center; gap: 8px; padding: 8px 10px; margin-bottom: 12px; }
+  .dash-sidebar-logo-icon { width: 26px; height: 26px; background: var(--teal); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+  .dash-sidebar-logo-icon svg { width: 13px; height: 13px; stroke: #030C1A; }
+  .dash-sidebar-logo span { font-size: 14px; font-weight: 700; color: var(--text); }
+  .sidebar-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; border-radius: 8px; cursor: pointer;
+    font-size: 13px; font-weight: 500; color: var(--text2);
+    transition: all 0.15s;
+  }
+  .sidebar-item svg { width: 15px; height: 15px; flex-shrink: 0; }
+  .sidebar-item.active { background: var(--teal-dim); color: var(--teal); }
+  .sidebar-divider { height: 1px; background: var(--border); margin: 8px 0; }
+  .sidebar-section { font-size: 10px; color: var(--text3); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; }
+
+  .dash-main { flex: 1; padding: 20px 24px; overflow: hidden; }
+  .dash-greeting { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .dash-date { font-size: 12px; color: var(--text3); margin-bottom: 20px; }
+
+  .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+  .kpi {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 14px 16px;
+    position: relative; overflow: hidden;
+  }
+  .kpi::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  }
+  .kpi.blue::after { background: linear-gradient(90deg, #3B82F6, #6366F1); }
+  .kpi.teal::after { background: linear-gradient(90deg, var(--teal), var(--teal2)); }
+  .kpi.amber::after { background: linear-gradient(90deg, #F59E0B, #EF4444); }
+  .kpi-label { font-size: 11px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .kpi-val { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: var(--text); margin-bottom: 4px; }
+  .kpi-delta { font-size: 11px; display: flex; align-items: center; gap: 4px; }
+  .kpi-delta.up { color: #22C55E; }
+  .kpi-delta.down { color: #EF4444; }
+
+  .dash-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .dash-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 16px;
+  }
+  .dash-card-title { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+  .dash-card-title span { background: var(--teal-dim2); color: var(--teal); font-size: 10px; padding: 2px 8px; border-radius: 20px; }
+
+  .resident-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .resident-item:last-child { border-bottom: none; }
+  .resident-avatar {
+    width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700;
+  }
+  .resident-name { color: var(--text); font-weight: 500; line-height: 1.3; }
+  .resident-unit { color: var(--text3); font-size: 10px; }
+  .resident-badge {
+    margin-left: auto; font-size: 10px; font-weight: 600;
+    padding: 2px 8px; border-radius: 20px; flex-shrink: 0;
+  }
+  .badge-green { background: var(--green-dim); color: #22C55E; }
+  .badge-red { background: var(--red-dim); color: #EF4444; }
+  .badge-amber { background: var(--amber-dim); color: var(--amber); }
+
+  .pqrs-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 12px;
+  }
+  .pqrs-item:last-child { border-bottom: none; }
+  .pqrs-dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+  .pqrs-text { color: var(--text2); line-height: 1.4; }
+  .pqrs-text strong { color: var(--text); font-weight: 600; }
+  .pqrs-time { color: var(--text3); font-size: 10px; margin-top: 2px; }
+
+  /* ── FEATURES ── */
+  .features-section { padding: 80px 0; }
+  .features-section h2 {
+    font-size: clamp(28px, 4vw, 44px); font-weight: 800; letter-spacing: -0.025em;
+    text-align: center; margin-bottom: 14px;
+  }
+  .features-section > .container > p {
+    text-align: center; color: var(--text2); font-size: 17px;
+    max-width: 520px; margin: 0 auto 56px; line-height: 1.65;
+  }
+  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .feature-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--r2); padding: 28px; transition: all 0.25s;
+    position: relative; overflow: hidden;
+  }
+  .feature-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0,229,200,0.3), transparent);
+    opacity: 0; transition: opacity 0.25s;
+  }
+  .feature-card:hover { border-color: var(--border2); transform: translateY(-3px); background: var(--card2); }
+  .feature-card:hover::before { opacity: 1; }
+  .feature-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    background: var(--teal-dim); border: 1px solid rgba(0,229,200,0.2);
+    display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
+  }
+  .feature-icon svg { width: 20px; height: 20px; stroke: var(--teal); }
+  .feature-icon.amber { background: var(--amber-dim); border-color: rgba(245,158,11,0.2); }
+  .feature-icon.amber svg { stroke: var(--amber); }
+  .feature-icon.purple { background: rgba(99,102,241,0.1); border-color: rgba(99,102,241,0.2); }
+  .feature-icon.purple svg { stroke: #818CF8; }
+  .feature-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.01em; }
+  .feature-card p { font-size: 14px; color: var(--text2); line-height: 1.65; }
+  .feature-tag {
+    display: inline-block; margin-top: 16px;
+    font-size: 11px; font-weight: 600; color: var(--text3);
+    background: var(--bg3); border: 1px solid var(--border);
+    padding: 3px 10px; border-radius: 20px;
+  }
+
+  /* ── TESTIMONIALS ── */
+  .testimonials-section { padding: 80px 0; }
+  .testimonials-section h2 { font-size: clamp(26px, 3.5vw, 40px); font-weight: 800; letter-spacing: -0.025em; text-align: center; margin-bottom: 10px; }
+  .testimonials-section > .container > p { text-align: center; color: var(--text2); font-size: 16px; max-width: 460px; margin: 0 auto 48px; }
+  .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .testimonial-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--r2); padding: 24px; display: flex; flex-direction: column; gap: 16px;
+    transition: border-color 0.2s;
+  }
+  .testimonial-card:hover { border-color: var(--border2); }
+  .stars { display: flex; gap: 3px; }
+  .star { color: var(--amber); font-size: 14px; }
+  .testimonial-text { font-size: 14px; color: var(--text2); line-height: 1.7; font-style: italic; flex: 1; }
+  .testimonial-text::before { content: '"'; color: var(--teal); font-size: 20px; font-style: normal; font-weight: 700; }
+  .testimonial-author { display: flex; align-items: center; gap: 12px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .author-avatar { width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+  .author-name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .author-role { font-size: 12px; color: var(--text3); }
+
+  /* ── PRICING ── */
+  .pricing-section { padding: 80px 0; }
+  .pricing-section h2 { font-size: clamp(26px, 3.5vw, 42px); font-weight: 800; letter-spacing: -0.025em; text-align: center; margin-bottom: 10px; }
+  .pricing-section > .container > p { text-align: center; color: var(--text2); font-size: 16px; max-width: 440px; margin: 0 auto 48px; }
+  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: start; }
+  .pricing-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--r2); padding: 32px 28px;
+    position: relative; transition: all 0.25s;
+  }
+  .pricing-card.featured {
+    border-color: rgba(0,229,200,0.35);
+    background: linear-gradient(160deg, var(--card2), var(--card));
+    transform: scale(1.03);
+  }
+  .pricing-card.featured::before {
+    content: 'Más Popular'; position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
+    background: var(--teal); color: #030C1A; font-size: 11px; font-weight: 700;
+    padding: 4px 16px; border-radius: 0 0 10px 10px; letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .pricing-name { font-size: 14px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+  .pricing-price { display: flex; align-items: baseline; gap: 4px; margin-bottom: 6px; }
+  .pricing-currency { font-size: 20px; font-weight: 700; color: var(--text2); margin-top: 6px; }
+  .pricing-amount { font-size: 46px; font-weight: 800; letter-spacing: -0.04em; color: var(--text); }
+  .pricing-period { font-size: 14px; color: var(--text3); }
+  .pricing-units { font-size: 12px; color: var(--text3); margin-bottom: 24px; }
+  .pricing-divider { height: 1px; background: var(--border); margin: 20px 0; }
+  .pricing-features { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+  .pricing-feature { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text2); }
+  .check { width: 16px; height: 16px; border-radius: 50%; background: var(--teal-dim); border: 1px solid rgba(0,229,200,0.3); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .check svg { width: 9px; height: 9px; stroke: var(--teal); }
+  .cross { width: 16px; height: 16px; border-radius: 50%; background: rgba(255,255,255,0.03); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .cross svg { width: 9px; height: 9px; stroke: var(--text3); }
+  .pricing-feature.muted { color: var(--text3); }
+  .pricing-btn {
+    width: 100%; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600;
+    cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all 0.2s;
+  }
+  .pricing-btn.outline { background: transparent; border: 1px solid var(--border2); color: var(--text2); }
+  .pricing-btn.outline:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+  .pricing-btn.fill { background: var(--teal); color: #030C1A; }
+  .pricing-btn.fill:hover { background: var(--teal2); box-shadow: 0 8px 30px rgba(0,229,200,0.2); }
+
+  /* ── CTA ── */
+  .cta-section { padding: 80px 0 100px; }
+  .cta-box {
+    background: linear-gradient(135deg, var(--card2) 0%, var(--card) 100%);
+    border: 1px solid rgba(0,229,200,0.2);
+    border-radius: 24px; padding: 64px 48px; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .cta-box::before {
+    content: ''; position: absolute; top: -80px; right: -80px;
+    width: 300px; height: 300px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,229,200,0.08) 0%, transparent 70%);
+  }
+  .cta-box::after {
+    content: ''; position: absolute; bottom: -80px; left: -80px;
+    width: 300px; height: 300px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%);
+  }
+  .cta-box h2 {
+    font-size: clamp(28px, 4vw, 48px); font-weight: 800; letter-spacing: -0.025em;
+    margin-bottom: 16px; position: relative; z-index: 1;
+  }
+  .cta-box p { font-size: 17px; color: var(--text2); max-width: 480px; margin: 0 auto 36px; line-height: 1.65; position: relative; z-index: 1; }
+  .cta-box .cta-actions { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; position: relative; z-index: 1; }
+
+  .dev-card {
+    max-width: 400px; margin: 40px auto 0;
+    background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+    border-radius: var(--r2); padding: 24px;
+    position: relative; z-index: 1;
+  }
+  .dev-card-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 14px; }
+  .dev-info { display: flex; align-items: center; gap: 14px; }
+  .dev-avatar {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: linear-gradient(135deg, var(--teal), #6366F1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 800; color: #030C1A; flex-shrink: 0;
+  }
+  .dev-name { font-size: 16px; font-weight: 700; color: var(--text); }
+  .dev-role { font-size: 12px; color: var(--teal); margin-top: 2px; }
+  .dev-links { display: flex; gap: 8px; margin-top: 16px; }
+  .dev-link {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 9px; border-radius: 8px; font-size: 13px; font-weight: 600;
+    border: 1px solid var(--border2); color: var(--text2); transition: all 0.2s;
+  }
+  .dev-link:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+  .dev-link svg { width: 14px; height: 14px; }
+  .dev-link.primary { background: var(--teal); color: #030C1A; border-color: transparent; }
+  .dev-link.primary:hover { background: var(--teal2); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--bg3); border-top: 1px solid var(--border);
+    padding: 40px 24px; text-align: center; position: relative; z-index: 1;
+  }
+  .footer-logo { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; }
+  .footer-logo-icon { width: 26px; height: 26px; background: var(--teal); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+  .footer-logo-icon svg { width: 13px; height: 13px; stroke: #030C1A; }
+  .footer-logo-text { font-size: 16px; font-weight: 700; color: var(--text); }
+  footer p { font-size: 13px; color: var(--text3); line-height: 1.7; }
+  footer p a { color: var(--text2); transition: color 0.2s; }
+  footer p a:hover { color: var(--teal); }
+
+  /* ── SCROLL ANIMATIONS ── */
+  .fade-up { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── MOBILE ── */
+  @media (max-width: 900px) {
+    .stats-strip { grid-template-columns: repeat(2, 1fr); }
+    .features-grid { grid-template-columns: 1fr 1fr; }
+    .testimonials-grid { grid-template-columns: 1fr; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .pricing-card.featured { transform: scale(1); }
+    .dash-sidebar { display: none; }
+    .dash-grid2 { grid-template-columns: 1fr; }
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+    .kpi:last-child { display: none; }
+    .cta-box { padding: 40px 24px; }
+  }
+  @media (max-width: 620px) {
+    .nav-links .nav-link { display: none; }
+    .hero { padding: 56px 0 40px; }
+    .stats-strip { grid-template-columns: 1fr 1fr; }
+    .features-grid { grid-template-columns: 1fr; }
+    .kpi-grid { grid-template-columns: 1fr; }
+    .kpi:last-child { display: block; }
+    .trust-row { flex-direction: column; align-items: flex-start; }
+    .dash-topbar { padding: 10px 14px; }
+    .dash-main { padding: 14px; }
+  }
+</style>
 </head>
-<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 font-sans antialiased selection:bg-primary-500 selection:text-white">
+<body>
 
-    <!-- Banner de Desarrollo -->
-    <div class="bg-amber-500 dark:bg-amber-600 text-amber-950 dark:text-white px-4 py-3 shadow-md text-center flex flex-col sm:flex-row items-center justify-center gap-3 relative z-50">
-        <span class="flex h-3 w-3 relative">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-200 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
-        </span>
-        <p class="text-sm font-semibold tracking-wide">
-            VERSIÓN PRE-ALFA: Plataforma en desarrollo activo. Las funciones mostradas son demostrativas.
-        </p>
+<div class="orb1"></div>
+<div class="orb2"></div>
+
+<!-- Banner -->
+<div class="banner">
+  <div class="banner-dot"></div>
+  <p>Versión Pre-Alfa — Plataforma en desarrollo activo &nbsp;·&nbsp; <span>Acceso anticipado disponible</span></p>
+</div>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V10.5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 21V12h6v9"/></svg>
+      </div>
+      <span class="logo-text">PH<span>Conecta</span></span>
+    </div>
+    <div class="nav-links">
+      <a href="#caracteristicas" class="nav-link">Módulos</a>
+      <a href="#precios" class="nav-link">Precios</a>
+      <a href="#contacto" class="nav-link">Contacto</a>
+      <a href="#contacto" class="nav-cta">
+        Solicitar Demo
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge"><div class="hero-badge-dot"></div>Plataforma #1 para copropiedades en Colombia</div>
+    <h1>Gestiona tu conjunto<br>con <em>inteligencia real.</em></h1>
+    <p class="hero-sub">Administración centralizada para copropiedades. Recaudo, PQRS, zonas comunes y comunicaciones en una sola plataforma diseñada para Colombia.</p>
+    <div class="hero-actions">
+      <a href="#contacto" class="btn-primary">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 12h14M12 5l7 7-7 7"/></svg>
+        Comenzar ahora
+      </a>
+      <a href="#dashboard" class="btn-secondary">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Ver demo interactivo
+      </a>
+    </div>
+    <div class="trust-row">
+      <span class="trust-label">Tecnología</span>
+      <div class="trust-badges">
+        <span class="trust-badge">PSE Integrado</span>
+        <span class="trust-badge">ISO 27001</span>
+        <span class="trust-badge">RGPD Colombia</span>
+        <span class="trust-badge">99.9% Uptime</span>
+      </div>
     </div>
 
-    <!-- Navegación -->
-    <nav class="sticky top-0 z-40 w-full backdrop-blur flex-none transition-colors duration-500 lg:z-50 lg:border-b lg:border-slate-900/10 dark:border-slate-50/[0.06] bg-white/95 dark:bg-slate-900/95">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-2">
-                    <!-- Logo Icon -->
-                    <svg class="w-8 h-8 text-primary-600 dark:text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                    <span class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-indigo-600 dark:from-primary-400 dark:to-indigo-400">
-                        PH Conecta
-                    </span>
-                </div>
-                
-                <div class="flex items-center gap-4">
-                    <button onclick="toggleTheme()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" aria-label="Toggle Dark Mode">
-                        <!-- Ícono Sol (Aparece en modo oscuro) -->
-                        <svg class="hidden dark:block w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path></svg>
-                        <!-- Ícono Luna (Aparece en modo claro) -->
-                        <svg class="block dark:hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-                    </button>
-                    <a href="#contacto" class="hidden sm:inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 shadow-sm transition-all">
-                        Contactar Desarrollador
-                    </a>
-                </div>
-            </div>
+    <!-- Stats -->
+    <div class="stats-strip fade-up">
+      <div class="stat-item">
+        <div class="stat-num"><span class="counter" data-target="2840">0</span><span>+</span></div>
+        <div class="stat-label">Unidades gestionadas</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num"><span class="counter" data-target="47">0</span></div>
+        <div class="stat-label">Conjuntos activos</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">$<span class="counter" data-target="1200">0</span>M</div>
+        <div class="stat-label">Recaudado en 2025</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num"><span class="counter" data-target="98">0</span><span>%</span></div>
+        <div class="stat-label">Satisfacción de admins</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Dashboard Preview -->
+<section class="dash-section" id="dashboard">
+  <div class="container">
+    <div class="dash-label">Dashboard Principal</div>
+    <h2>Todo en una sola pantalla.</h2>
+    <p>Visualiza el estado financiero, operativo y social de tu copropiedad en tiempo real. Sin hojas de cálculo, sin WhatsApp groups.</p>
+
+    <div class="dashboard-mock fade-up">
+      <div class="dash-topbar">
+        <div class="traffic-dots">
+          <div class="td" style="background:#EF4444"></div>
+          <div class="td" style="background:#F59E0B"></div>
+          <div class="td" style="background:#22C55E"></div>
         </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <main class="relative overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-24 text-center lg:pt-32">
-            <h1 class="mx-auto max-w-4xl font-display text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-7xl">
-                La gestión de tu conjunto, <br>
-                <span class="relative whitespace-nowrap text-primary-600 dark:text-primary-400">
-                    <svg aria-hidden="true" viewBox="0 0 418 42" class="absolute left-0 top-2/3 h-[0.58em] w-full fill-primary-300/50 dark:fill-primary-900/50" preserveAspectRatio="none"><path d="M203.371.916c-26.013-2.078-76.686 1.963-124.73 9.946L67.3 12.749C35.421 18.062 18.2 21.766 6.004 25.934 1.244 27.561.828 27.778.874 28.61c.051 1.058 6.528 3.238 12.65 4.187 4.537.703 27.596 3.219 40.2 3.991 22.8 1.392 53.953 2.921 82.373 4.025 58.69 2.296 114.62 1.411 176.52-2.428 12.51-1.34 32.22-4.143 38.35-5.462 2.1-.453 6.94-1.637 10.74-2.633 13.9-3.642 38.45-12.288 39.81-14.041.51-.659.62-1.28.32-1.745-.37-.577-1.78-1.109-3.92-1.488-3.05-.536-12.01-1.341-16.14-1.442-14.54-.36-40.09 1.49-51.52 3.71-12.71 2.47-38.64 8.76-54.67 13.2-1.64.45-3.32.91-3.75 1.02-1.48.37-1.12.16.89-.48 4.28-1.35 15.65-4.22 19.34-4.88 4.96-1.07 10.15-2.22 15.34-3.39 3.32-.75 6.63-1.49 10-2.22 4.1-1.04 8.16-2.01 12.18-2.9 6.82-1.61 13.56-3.09 20.21-4.42 2.37-.56 4.71-1.1 7.02-1.6 6.36-1.5 12.59-2.82 18.66-3.97 3.55-.7 7.05-1.32 10.51-1.89 4.31-.76 8.44-1.35 12.44-1.87 3.86-.54 7.57-1 11.14-1.38 2.87-.33 5.61-.6 8.21-.83 6.13-.57 11.53-.9 16.15-1.08 6.4-.28 11.3-.35 14.65-.21 3.52.16 5.86.41 7.01.76.59.19.98.37 1.15.54.34.34.45.69.32 1.04-.15.39-.53.79-1.12 1.2-1.29.89-3.72 1.83-7.25 2.81-4.72 1.3-11.45 2.66-20.12 4.09-8.47 1.4-18.91 2.85-31.25 4.34-11.75 1.42-25.26 2.82-40.42 4.18-14.71 1.32-31.06 2.56-48.91 3.7-18.61 1.18-38.83 2.24-60.55 3.16-21.36.91-44.25 1.68-68.52 2.3-24.8.64-50.93 1.12-78.33 1.44-26.68.31-54.63.47-83.69.49-29.6.02-60.33-.14-92.05-.46-31.13-.32-63.36-.8-96.53-1.45-33.84-.66-68.68-1.48-104.38-2.47-34.9-1.06-70.6-2.28-106.9-3.66z"></path></svg>
-                    <span class="relative">ahora es simple.</span>
-                </span>
-            </h1>
-            <p class="mx-auto mt-6 max-w-2xl text-lg tracking-tight text-slate-700 dark:text-slate-300">
-                La plataforma definitiva para administradores, copropietarios y residentes en Colombia. Controla pagos, zonas comunes y PQRS desde un solo lugar.
-            </p>
-            
-            <!-- Dashboard Preview Falso -->
-            <div class="mt-16 flex justify-center">
-                <div class="relative rounded-xl bg-slate-900/5 dark:bg-white/5 p-2 ring-1 ring-inset ring-slate-900/10 dark:ring-white/10 lg:-m-4 lg:rounded-2xl lg:p-4 w-full max-w-5xl shadow-2xl">
-                    <div class="rounded-md bg-white dark:bg-slate-900 shadow-sm ring-1 ring-slate-900/5 dark:ring-white/5 overflow-hidden">
-                        <div class="flex items-center px-4 py-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
-                            <div class="flex space-x-2">
-                                <div class="w-3 h-3 rounded-full bg-red-400"></div>
-                                <div class="w-3 h-3 rounded-full bg-amber-400"></div>
-                                <div class="w-3 h-3 rounded-full bg-green-400"></div>
-                            </div>
-                            <div class="ml-4 text-xs text-slate-500 font-mono">app.phconecta.co/dashboard</div>
-                        </div>
-                        <!-- Contenido Falso del ERP -->
-                        <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <!-- Tarjeta Info -->
-                            <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800 text-left">
-                                <h3 class="text-sm font-medium text-blue-600 dark:text-blue-400">Recaudo del Mes</h3>
-                                <p class="text-2xl font-bold text-slate-900 dark:text-white mt-2">$45.230.000</p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">▲ 12% vs mes anterior</p>
-                            </div>
-                            <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-100 dark:border-green-800 text-left">
-                                <h3 class="text-sm font-medium text-green-600 dark:text-green-400">Cartera en Mora</h3>
-                                <p class="text-2xl font-bold text-slate-900 dark:text-white mt-2">$3.150.000</p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Apto 402, 501, 804</p>
-                            </div>
-                            <div class="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg border border-purple-100 dark:border-purple-800 text-left">
-                                <h3 class="text-sm font-medium text-purple-600 dark:text-purple-400">Reservas Activas</h3>
-                                <p class="text-2xl font-bold text-slate-900 dark:text-white mt-2">8</p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">BBQ (3), Salón Comunal (5)</p>
-                            </div>
-                            <!-- Tabla Falsa -->
-                            <div class="col-span-1 md:col-span-3 mt-4 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
-                                <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700 text-left text-sm">
-                                    <thead class="bg-slate-50 dark:bg-slate-800/50">
-                                        <tr>
-                                            <th class="px-4 py-3 font-semibold text-slate-900 dark:text-slate-200">Unidad</th>
-                                            <th class="px-4 py-3 font-semibold text-slate-900 dark:text-slate-200">Residente</th>
-                                            <th class="px-4 py-3 font-semibold text-slate-900 dark:text-slate-200">Estado Pago</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
-                                        <tr>
-                                            <td class="px-4 py-3 text-slate-700 dark:text-slate-300">Torre 1 - 101</td>
-                                            <td class="px-4 py-3 text-slate-700 dark:text-slate-300">Familia Gómez</td>
-                                            <td class="px-4 py-3"><span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-500/10 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400 ring-1 ring-inset ring-green-600/20">Al día</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-4 py-3 text-slate-700 dark:text-slate-300">Torre 2 - 402</td>
-                                            <td class="px-4 py-3 text-slate-700 dark:text-slate-300">Carlos Ramírez</td>
-                                            <td class="px-4 py-3"><span class="inline-flex items-center rounded-md bg-red-50 dark:bg-red-500/10 px-2 py-1 text-xs font-medium text-red-700 dark:text-red-400 ring-1 ring-inset ring-red-600/10">Mora (2 meses)</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="dash-url">
+          <div class="dash-url-dot"></div>
+          app.phconecta.co/dashboard
         </div>
-    </main>
-
-    <!-- Características (Features) -->
-    <section class="py-16 bg-white dark:bg-slate-900 transition-colors">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-3xl mx-auto mb-16">
-                <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">Módulos Principales</h2>
-                <p class="mt-4 text-lg text-slate-600 dark:text-slate-400">Todo lo que necesitas para centralizar la información de la copropiedad, sin dolores de cabeza ni hojas de cálculo infinitas.</p>
+      </div>
+      <div class="dash-body">
+        <!-- Sidebar -->
+        <div class="dash-sidebar">
+          <div class="dash-sidebar-logo">
+            <div class="dash-sidebar-logo-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V10.5z"/></svg>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Feature 1 -->
-                <div class="bg-slate-50 dark:bg-slate-800/50 p-8 rounded-2xl border border-slate-100 dark:border-slate-800 hover:shadow-lg transition-all">
-                    <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/50 text-primary-600 dark:text-primary-400 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-3">Facturación y Recaudo</h3>
-                    <p class="text-slate-600 dark:text-slate-400">Emisión masiva de cuentas de cobro, conciliación bancaria y pasarela de pagos integrada con PSE.</p>
-                </div>
-
-                <!-- Feature 2 -->
-                <div class="bg-slate-50 dark:bg-slate-800/50 p-8 rounded-2xl border border-slate-100 dark:border-slate-800 hover:shadow-lg transition-all">
-                    <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-3">Zonas Comunes</h3>
-                    <p class="text-slate-600 dark:text-slate-400">Calendario interactivo para reservar zonas BBQ, salones comunales y gimnasio, con aprobación automática o manual.</p>
-                </div>
-
-                <!-- Feature 3 -->
-                <div class="bg-slate-50 dark:bg-slate-800/50 p-8 rounded-2xl border border-slate-100 dark:border-slate-800 hover:shadow-lg transition-all">
-                    <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-3">PQRS & Comunicados</h3>
-                    <p class="text-slate-600 dark:text-slate-400">Cartelera virtual para anuncios, reportes de daños, quejas y sugerencias con trazabilidad y tiempos de respuesta.</p>
-                </div>
-            </div>
+            <span>PHC</span>
+          </div>
+          <div class="sidebar-section">Principal</div>
+          <div class="sidebar-item active">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            Inicio
+          </div>
+          <div class="sidebar-item">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Facturación
+          </div>
+          <div class="sidebar-item">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Residentes
+          </div>
+          <div class="sidebar-divider"></div>
+          <div class="sidebar-section">Operaciones</div>
+          <div class="sidebar-item">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            Zonas Comunes
+          </div>
+          <div class="sidebar-item">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+            PQRS
+          </div>
+          <div class="sidebar-item">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            Reportes
+          </div>
         </div>
-    </section>
 
-    <!-- Sección de Contacto al Desarrollador -->
-    <section id="contacto" class="py-24 bg-slate-50 dark:bg-slate-950 transition-colors">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-800 dark:to-slate-900 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
-                <!-- Decorative background elements -->
-                <div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 rounded-full bg-primary-500/10 blur-3xl"></div>
-                <div class="absolute bottom-0 left-0 -ml-16 -mb-16 w-64 h-64 rounded-full bg-indigo-500/10 blur-3xl"></div>
-                
-                <div class="relative z-10 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-8">
-                    <div class="max-w-xl">
-                        <span class="inline-flex items-center rounded-full bg-primary-500/10 px-3 py-1 text-sm font-medium text-primary-400 ring-1 ring-inset ring-primary-500/20 mb-6">
-                            👨‍💻 Acceso Anticipado
-                        </span>
-                        <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl mb-4">
-                            ¿Interesado en implementar PH Conecta?
-                        </h2>
-                        <p class="text-lg text-slate-300 mb-6">
-                            La plataforma actualmente se encuentra en fase de desarrollo y estructuración técnica. Estamos creando la arquitectura robusta que los conjuntos residenciales en Colombia merecen.
-                        </p>
-                        <div class="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 backdrop-blur-sm">
-                            <p class="text-sm text-slate-400 mb-1">Responsable del proyecto:</p>
-                            <div class="flex items-center gap-3">
-                                <div class="w-12 h-12 rounded-full bg-primary-600 flex items-center justify-center text-white font-bold text-xl">
-                                    DM
-                                </div>
-                                <div>
-                                    <h4 class="text-lg font-semibold text-white">Daniel Murillo Amaya</h4>
-                                    <p class="text-primary-400 text-sm">Desarrollador Senior / Líder Técnico</p>
-                                </div>
-                            </div>
-                            <div class="mt-4 pt-4 border-t border-slate-700/50 flex flex-col sm:flex-row gap-3">
-                                <a href="mailto:contacto@phconecta.co" class="flex-1 inline-flex justify-center items-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-500 text-white rounded-lg font-medium transition-colors">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                                    Enviar Correo
-                                </a>
-                                <button class="flex-1 inline-flex justify-center items-center gap-2 px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors border border-slate-600">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                                    Ver Portafolio
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Main -->
+        <div class="dash-main">
+          <div class="dash-greeting">Bienvenida, Adriana 👋</div>
+          <div class="dash-date">Martes, 12 de mayo de 2026 &nbsp;·&nbsp; Torres del Parque, Bogotá</div>
+
+          <div class="kpi-grid">
+            <div class="kpi teal">
+              <div class="kpi-label">Recaudo Mayo</div>
+              <div class="kpi-val">$54.2M</div>
+              <div class="kpi-delta up">▲ 8.3% vs abril</div>
+            </div>
+            <div class="kpi blue">
+              <div class="kpi-label">Cartera en mora</div>
+              <div class="kpi-val">$4.8M</div>
+              <div class="kpi-delta down">▼ 3 unidades</div>
+            </div>
+            <div class="kpi amber">
+              <div class="kpi-label">PQRS Pendientes</div>
+              <div class="kpi-val">7</div>
+              <div class="kpi-delta up" style="color:var(--amber)">● 2 urgentes</div>
+            </div>
+          </div>
+
+          <div class="dash-grid2">
+            <!-- Residentes -->
+            <div class="dash-card">
+              <div class="dash-card-title">Residentes <span>128 unidades</span></div>
+              <div class="resident-item">
+                <div class="resident-avatar" style="background:rgba(0,229,200,0.15);color:var(--teal)">FG</div>
+                <div><div class="resident-name">Fam. Gómez</div><div class="resident-unit">Torre 1 — Apto 101</div></div>
+                <div class="resident-badge badge-green">Al día</div>
+              </div>
+              <div class="resident-item">
+                <div class="resident-avatar" style="background:rgba(99,102,241,0.15);color:#818CF8">CR</div>
+                <div><div class="resident-name">Carlos Ramírez</div><div class="resident-unit">Torre 2 — Apto 402</div></div>
+                <div class="resident-badge badge-red">Mora ×2</div>
+              </div>
+              <div class="resident-item">
+                <div class="resident-avatar" style="background:rgba(245,158,11,0.15);color:var(--amber)">LM</div>
+                <div><div class="resident-name">Luisa Morales</div><div class="resident-unit">Torre 3 — Apto 804</div></div>
+                <div class="resident-badge badge-amber">Mora ×1</div>
+              </div>
+              <div class="resident-item">
+                <div class="resident-avatar" style="background:rgba(34,197,94,0.15);color:#22C55E">JP</div>
+                <div><div class="resident-name">Jorge Pedraza</div><div class="resident-unit">Torre 1 — Apto 305</div></div>
+                <div class="resident-badge badge-green">Al día</div>
+              </div>
+            </div>
+
+            <!-- PQRS -->
+            <div class="dash-card">
+              <div class="dash-card-title">PQRS Recientes <span>7 abiertas</span></div>
+              <div class="pqrs-item">
+                <div class="pqrs-dot" style="background:#EF4444"></div>
+                <div>
+                  <div class="pqrs-text"><strong>Fuga de agua</strong> — Apto 602</div>
+                  <div class="pqrs-time">Hace 2 horas · Urgente</div>
                 </div>
+              </div>
+              <div class="pqrs-item">
+                <div class="pqrs-dot" style="background:var(--amber)"></div>
+                <div>
+                  <div class="pqrs-text"><strong>Ascensor detenido</strong> — Torre 2</div>
+                  <div class="pqrs-time">Hace 5 horas · En gestión</div>
+                </div>
+              </div>
+              <div class="pqrs-item">
+                <div class="pqrs-dot" style="background:var(--teal)"></div>
+                <div>
+                  <div class="pqrs-text"><strong>Reserva BBQ</strong> — 18 mayo</div>
+                  <div class="pqrs-time">Hace 1 día · Pendiente aprob.</div>
+                </div>
+              </div>
+              <div class="pqrs-item">
+                <div class="pqrs-dot" style="background:var(--text3)"></div>
+                <div>
+                  <div class="pqrs-text"><strong>Ruido nocturno</strong> — Apto 701</div>
+                  <div class="pqrs-time">Hace 2 días · Asignado</div>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- Footer -->
-    <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-8 transition-colors">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div class="flex items-center justify-center gap-2 mb-4">
-                <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                <span class="text-xl font-bold text-slate-900 dark:text-white">PH Conecta</span>
-            </div>
-            <p class="text-sm text-slate-500 dark:text-slate-400">
-                &copy; 2026 PH Conecta. Todos los derechos reservados.<br>
-                Desarrollado en Colombia 🇨🇴 por Daniel Murillo Amaya.
-            </p>
+<!-- Features -->
+<section class="features-section" id="caracteristicas">
+  <div class="container">
+    <h2>Módulos diseñados para la realidad colombiana.</h2>
+    <p>Construido entendiendo el día a día de administradores, copropietarios y residentes.</p>
+    <div class="features-grid">
+      <div class="feature-card fade-up">
+        <div class="feature-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         </div>
-    </footer>
+        <h3>Facturación y Recaudo</h3>
+        <p>Emisión masiva de cuentas de cobro, conciliación bancaria automática y pasarela PSE nativa. Genera extractos PDF en un clic.</p>
+        <span class="feature-tag">PSE · Bancos · PDF</span>
+      </div>
+      <div class="feature-card fade-up" style="transition-delay:0.08s">
+        <div class="feature-icon amber">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        </div>
+        <h3>Zonas Comunes</h3>
+        <p>Calendario interactivo para reservas de BBQ, salones y gimnasio. Aprobación automática o manual con notificaciones push.</p>
+        <span class="feature-tag">Calendario · Notificaciones</span>
+      </div>
+      <div class="feature-card fade-up" style="transition-delay:0.16s">
+        <div class="feature-icon purple">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+        </div>
+        <h3>PQRS & Comunicados</h3>
+        <p>Cartelera virtual, gestión de quejas con trazabilidad y tiempos de respuesta regulados según la Ley 675 de 2001.</p>
+        <span class="feature-tag">Ley 675 · Trazabilidad</span>
+      </div>
+      <div class="feature-card fade-up" style="transition-delay:0.06s">
+        <div class="feature-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <h3>Control de Acceso</h3>
+        <p>Registro de visitantes, códigos QR para autorización de entrada y bitácora digital del personal de vigilancia.</p>
+        <span class="feature-tag">QR · Vigilancia · Bitácora</span>
+      </div>
+      <div class="feature-card fade-up" style="transition-delay:0.14s">
+        <div class="feature-icon amber">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        </div>
+        <h3>Reportes Financieros</h3>
+        <p>Estados de cuenta, presupuesto anual, ejecución presupuestal y reportes para asambleas exportables a Excel y PDF.</p>
+        <span class="feature-tag">Excel · PDF · Asamblea</span>
+      </div>
+      <div class="feature-card fade-up" style="transition-delay:0.22s">
+        <div class="feature-icon purple">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+        </div>
+        <h3>Notificaciones Inteligentes</h3>
+        <p>Alertas de mora, recordatorios de asambleas, novedad de mantenimiento vía WhatsApp, SMS y correo electrónico.</p>
+        <span class="feature-tag">WhatsApp · SMS · Email</span>
+      </div>
+    </div>
+  </div>
+</section>
 
+<!-- Testimonials -->
+<section class="testimonials-section">
+  <div class="container">
+    <h2>Lo que dicen nuestros administradores.</h2>
+    <p>Resultados reales de conjuntos en Colombia que ya están en fase piloto.</p>
+    <div class="testimonials-grid">
+      <div class="testimonial-card fade-up">
+        <div class="stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+        <div class="testimonial-text">PHConecta nos permitió reducir la cartera morosa en un 40% en solo tres meses. El módulo de notificaciones automáticas por WhatsApp fue clave.</div>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background:rgba(0,229,200,0.15);color:var(--teal)">AS</div>
+          <div>
+            <div class="author-name">Adriana Sandoval</div>
+            <div class="author-role">Administradora · Torres del Parque, Bogotá</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card fade-up" style="transition-delay:0.08s">
+        <div class="stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+        <div class="testimonial-text">Por fin una herramienta que entiende la normativa colombiana. El módulo de PQRS con los tiempos de la Ley 675 es algo que ningún otro software tenía.</div>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background:rgba(99,102,241,0.15);color:#818CF8">RO</div>
+          <div>
+            <div class="author-name">Ricardo Ospina</div>
+            <div class="author-role">Administrador · Conjunto Cedros, Medellín</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card fade-up" style="transition-delay:0.16s">
+        <div class="stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+        <div class="testimonial-text">Las reservas de zonas comunes ya no generan conflictos entre vecinos. El calendario online con aprobaciones instantáneas cambió la convivencia del conjunto.</div>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background:rgba(245,158,11,0.15);color:var(--amber)">CM</div>
+          <div>
+            <div class="author-name">Camila Montoya</div>
+            <div class="author-role">Copropietaria · Parque Residencial, Cali</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="pricing-section" id="precios">
+  <div class="container">
+    <h2>Planes simples y transparentes.</h2>
+    <p>Sin comisiones ocultas. Precio basado en el número de unidades del conjunto.</p>
+    <div class="pricing-grid">
+      <!-- Starter -->
+      <div class="pricing-card fade-up">
+        <div class="pricing-name">Esencial</div>
+        <div class="pricing-price">
+          <span class="pricing-currency">$</span>
+          <span class="pricing-amount">189</span>
+          <span class="pricing-period">/mes</span>
+        </div>
+        <div class="pricing-units">Hasta 50 unidades · COP</div>
+        <div class="pricing-divider"></div>
+        <div class="pricing-features">
+          <div class="pricing-feature"><div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div> Facturación y recaudo</div>
+          <div class="pricing-feature"><div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div> Gestión de residentes</div>
+          <div class="pricing-feature"><div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div> PQRS básico</div>
+          <div class="pricing-feature muted"><div class="cross"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg></div> Zonas comunes</div>
+          <div class="pricing-feature muted"><div class="cross"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg></div> Notif. WhatsApp</div>
+        </div>
+        <button class="pricing-btn outline">Empezar gratis →</button>
+      </div>
+
+      <!-- Pro (featured) -->
+      <div class="pricing-card featured fade-up" style="transition-delay:0.08s">
+        <div class="pricing-name">Profesional</div>
+        <div class="pricing-price">
+          <span class="pricing-currency">$</span>
+          <span class="pricing-amount">389</span>
+          <span class="pricing-period">/mes</span>
+        </div>
+        <div class="pricing-units">Hasta 150 unidades · COP</div>
+        <div class="pricing-divider"></div>
+        <div class="pricing-features">
+          <div class="pricing-feature"><div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div> Todo lo del Esencial</div>
+          <div class="pricing-feature"><div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div> Zonas comunes</div>
+          <div class="pricing-feature"><div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div> Notif. WhatsApp + SMS</div>
+          <div class="pricing-feature"><div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div> Control de acceso QR</div>
+          <div class="pricing-feature"><div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div> Reportes financieros</div>
+        </div>
+        <button class="pricing-btn fill">Solicitar demo →</button>
+      </div>
+
+      <!-- Enterprise -->
+      <div class="pricing-card fade-up" style="transition-delay:0.16s">
+        <div class="pricing-name">Empresarial</div>
+        <div class="pricing-price">
+          <span class="pricing-amount" style="font-size:36px;margin-bottom:4px">A medida</span>
+        </div>
+        <div class="pricing-units">+150 unidades / Multitorre</div>
+        <div class="pricing-divider"></div>
+        <div class="pricing-features">
+          <div class="pricing-feature"><div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div> Todo lo del Profesional</div>
+          <div class="pricing-feature"><div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div> Múltiples conjuntos</div>
+          <div class="pricing-feature"><div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div> API & Integraciones</div>
+          <div class="pricing-feature"><div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div> Soporte dedicado</div>
+          <div class="pricing-feature"><div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div> SLA garantizado</div>
+        </div>
+        <button class="pricing-btn outline">Hablar con ventas →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="contacto">
+  <div class="container">
+    <div class="cta-box fade-up">
+      <h2>¿Listo para modernizar<br>tu copropiedad?</h2>
+      <p>La plataforma está en fase de acceso anticipado. Sé de los primeros conjuntos en Colombia en adoptarla.</p>
+      <div class="cta-actions">
+        <a href="mailto:contacto@phconecta.co" class="btn-primary">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          Enviar correo
+        </a>
+        <a href="#" class="btn-secondary">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          Ver portafolio
+        </a>
+      </div>
+
+      <div class="dev-card">
+        <div class="dev-card-label">Responsable del proyecto</div>
+        <div class="dev-info">
+          <div class="dev-avatar">DM</div>
+          <div>
+            <div class="dev-name">Daniel Murillo Amaya</div>
+            <div class="dev-role">Desarrollador Senior · Líder Técnico</div>
+          </div>
+        </div>
+        <div class="dev-links">
+          <a href="mailto:contacto@phconecta.co" class="dev-link primary">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Escribir
+          </a>
+          <a href="#" class="dev-link">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            Portafolio
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-logo">
+    <div class="footer-logo-icon">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V10.5z"/></svg>
+    </div>
+    <span class="footer-logo-text">PHConecta</span>
+  </div>
+  <p>
+    &copy; 2026 PH Conecta — Todos los derechos reservados.<br>
+    Desarrollado con ❤️ en Colombia 🇨🇴 por <a href="mailto:contacto@phconecta.co">Daniel Murillo Amaya</a>.<br>
+    <span style="font-size:11px;color:var(--text3)">Versión pre-alfa. Las estadísticas y datos mostrados son demostrativos.</span>
+  </p>
+</footer>
+
+<script>
+  // Counter animation
+  function animateCounter(el) {
+    const target = parseInt(el.dataset.target);
+    const duration = 1800;
+    const start = performance.now();
+    function update(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const ease = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(ease * target).toLocaleString('es-CO');
+      if (progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+  }
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        // Trigger counters when stats become visible
+        entry.target.querySelectorAll('.counter').forEach(animateCounter);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
 </body>
 </html>
